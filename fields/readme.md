@@ -1,6 +1,6 @@
 # Random fluctuation fields and pre-integration
 
-This folder contains the disordered fracture-energy fields used by the propagation solvers. A ready-to-use field is shipped with the repository, so the following steps are **not** required for the default demo. Use them only to generate a new realization or change the discretization.
+This folder contains the disordered fracture-energy fields used by the propagation solvers. A ready-to-use field GaussianUniform_f.npz is archived on Zenodo (DOI: https://doi.org/10.5281/zenodo.20056873), so the following steps are **not** required for the default demo. Use them only to generate a new realization or change the discretization.
 
 ## Scripts
 
