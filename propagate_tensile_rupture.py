@@ -113,7 +113,7 @@ print("Launch {:s}.".format(simulation_name))
 # Reference axisymmetric problem
 
 # Potential energy
-Pi_pot_0 = lambda a, P : 2*np.pi * (P**2 /(E*jnp.pi**3))/ a #previous expression : 2*np.pi * P_tilde / a , hence P_tilde = (P**2 /(E*jnp.pi**3))
+Pi_pot_0 = lambda a, P : 2*np.pi * (P**2 /(E*jnp.pi**3))/ a 
 # G and its derivatives
 G0 = lambda a, P : (P**2 /(E*jnp.pi**3)) / a**3
 G0_prime = lambda a, P : -3 * (P**2 /(E*jnp.pi**3)) / a**4
@@ -276,7 +276,7 @@ def obj_potential_energy(a_i, P, futils):
     da_i = a_i - hat_a_0
     dft_N_da = jfft.rfft(da_i, norm="forward")
     # Fractional laplacian
-    dft_N_Lda = - jnp.abs(k) * dft_N_da # Note: tensile uses the (−|k|) Fourier convention for L; the sign is reabsorbed in the Pi_pot expression below (cf. l. 289). Shear solver uses the standard (+|k|) convention.
+    dft_N_Lda = - jnp.abs(k) * dft_N_da # Note: (−|k|) Fourier convention for L; the sign is reabsorbed in the Pi_pot expression below (cf. l. 289). Shear solver uses the standard (+|k|) convention.
     Lda_i = jfft.irfft(dft_N_Lda, norm="forward")
     
     # Dealiased averaged quantities
