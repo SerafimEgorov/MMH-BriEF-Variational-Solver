@@ -655,7 +655,7 @@ tao.setInitial(x_guess)
 # Radius
 a0_low = np.logspace(np.log10(1E-4), np.log10(0.1), base = 10, num = 34, endpoint = True)
 a0_high = np.linspace(0.1, a_max, num=int((a_max-1)/da)+1, endpoint=True)[1:]
-a0 = np.concatenate((a0_low, a0_high)) #a0 = np.arange(0., a_max+da, step=da); a0[0] = 1E-1*a0[1] #Probably to change to be coherent with shear one 
+a0 = np.concatenate((a0_low, a0_high)) 
 # Loading
 P = np.sqrt(E*Gc_0) * (np.pi*a0)**(3/2)
 # Array for data save
