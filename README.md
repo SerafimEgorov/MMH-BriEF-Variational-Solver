@@ -113,3 +113,4 @@ A `{sim}.pdf` showing the field and successive front positions is also produced 
 - The integrated fluctuations file `{f}_F_N{N}pts.npz` must be precomputed for the exact `N` requested at runtime (the solver cross-checks the angular grid and aborts on mismatch).
 - For very large simulations consider disabling the LaTeX matplotlib backend by editing `rc('text', usetex=True)` at the top of the scripts (allowed only as a local workaround).
 - The code is RAM-heavy: for the current examples, ≈ 8 GB of free RAM is needed.
+- The notation is different from one used in assosiated article. In particular: i) $K_1 = K_\mathrm{I}$ ; $K_2 = K_\mathrm{II}$ ; $K_3 = - K_\mathrm{III}$; ii) Hilbert transform operator $\mathcal{S} = - \mathcal{H}$
