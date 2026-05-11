@@ -62,8 +62,6 @@ parser.add_argument('-nu', '--poisson_ratio', type=float,
                     help=('Poisson ratio for the simulation'), required=True)
 parser.add_argument('-sign', '--sign', type=float,
                     help=('Sign factor'), default=+1, nargs='?')
-parser.add_argument('-alpha', '--alpha', type=float,
-                    help=('Regularization parameter'), default=0, nargs='?')
 parser.add_argument('-N', '--number_of_points', type=int,
                     help=('Number of points along the crack front'), required=True)
 parser.add_argument('-path', '--path', type=str,
@@ -100,8 +98,6 @@ a_ini = args.initial_radius
 a_max = args.max_radius
 # Get radius increment
 da = args.step_radius
-# Get regularization parameter
-alpha = args.alpha
 # Get trust region radius
 Delta = args.tr_radius
 
@@ -130,11 +126,9 @@ G0_over_a = lambda a, P : G0(a, P)/a # reserved for second order in G; unused at
 
 # FrontUtils class
 class FrontUtils():
-    def __init__(self, n, alpha):
+    def __init__(self, n):
         # Number of points
         self.N = n
-        # Regularization parameter
-        self.reg = alpha
         # Angle
         self.theta = jnp.linspace(0, 2*jnp.pi, num=n, endpoint=False, dtype='float64')
         # Wavenumber
@@ -276,7 +270,7 @@ def obj_potential_energy(a_i, P, futils):
     da_i = a_i - hat_a_0
     dft_N_da = jfft.rfft(da_i, norm="forward")
     # Fractional laplacian
-    dft_N_Lda = - jnp.abs(k) * dft_N_da # Note: (−|k|) Fourier convention for L; the sign is reabsorbed in the Pi_pot expression below (cf. l. 289). Shear solver uses the standard (+|k|) convention.
+    dft_N_Lda = - jnp.abs(k) * dft_N_da # Note: (âˆ’|k|) Fourier convention for L; the sign is reabsorbed in the Pi_pot expression below (cf. l. 289). Shear solver uses the standard (+|k|) convention.
     Lda_i = jfft.irfft(dft_N_Lda, norm="forward")
     
     # Dealiased averaged quantities
@@ -286,7 +280,7 @@ def obj_potential_energy(a_i, P, futils):
     # Objective
     obj_Pi_pot =  Pi_pot_0(hat_a_0, P) \
                 - jnp.pi   * aG0_prime(hat_a_0, P) * hat_da2_0 \
-                - jnp.pi   * G0(hat_a_0, P) * hat_daLda_0 # Note: The minus sign here compensates the (−|k|) convention used for L_code on l. 279, so that the result matches +π G0 <Δa·L[Δa]> as in Eq. (17) of the article.
+                - jnp.pi   * G0(hat_a_0, P) * hat_daLda_0 # Note: The minus sign here compensates the (âˆ’|k|) convention used for L_code on l. 279, so that the result matches +Ï€ G0 <Î”aÂ·L[Î”a]> as in Eq. (17) of the article.
     
     return obj_Pi_pot
 
@@ -328,50 +322,6 @@ def hessp_dissipated_energy(a_i, v_i, futils, finterp):
     return jax.jvp(lambda x : grad_dissipated_energy(x, futils, finterp), (a_i,), (v_i,))[1]
 
 ########################################################################
-# Functions related to the regularization energy
-
-# Compute objective
-@partial(jit, static_argnums=(2,))
-def obj_regularization_energy(a_i, P, futils):
-    #Number of points
-    N = futils.N
-    # Regularization parameter
-    alpha = futils.reg
-    # Fast Fourier transform
-    dft_N_a = jfft.rfft(a_i, norm="forward")
-    # Average radius
-    hat_a_0 = dft_N_a[0].real
-    # Perturbation
-    dft_N_da = dft_N_a * futils.not_zeroFreq
-    
-    # Padding for de-aliasing
-    M = futils.N_superpad
-    k_pad = futils.k_superpad
-    is_Nyquist_pad = futils.is_Nyquist_superpad
-    # Padded quantity
-    ## da
-    dft_M_da  = jnp.pad(dft_N_da, (0, M//2-N//2)); dft_M_da *= 1 - is_Nyquist_pad/2
-    da_pad = jfft.irfft(dft_M_da, norm="forward")
-    ## L[da]
-    dft_M_Lda = - jnp.abs(k_pad) * dft_M_da
-    Lda_pad = jfft.irfft(dft_M_Lda, norm="forward")
-    # Dealiased averaged quantities
-    hat_da2Lda2_0 = jnp.mean(da_pad**2 * Lda_pad**2) - 2 * (dft_M_da[N//2]**2 * dft_M_Lda[N//2]**2).real
-    
-    # Objective
-    obj_Pi_reg = jnp.pi * alpha * G0(hat_a_0, P)/hat_a_0**2 * hat_da2Lda2_0
-    
-    return obj_Pi_reg
-
-# Compute gradient
-grad_regularization_energy = jax.jit(jax.grad(obj_regularization_energy, argnums=0), static_argnums=(2,))
-
-# Compute Hessian vector product
-@partial(jit, static_argnums=(3,))
-def hessp_regularization_energy(a_i, v_i, P, futils):
-    return jax.jvp(lambda x : grad_regularization_energy(x, P, futils), (a_i,), (v_i,))[1]
-
-########################################################################
 # Functions related to the total energy
 
 # Compute objective
@@ -381,10 +331,8 @@ def obj_total_energy(a_i, P, futils, finterp):
     obj_Pi_pot = obj_potential_energy(a_i, P, futils)
     # Dissipated energy
     obj_Pi_dis = obj_dissipated_energy(a_i, futils, finterp)
-    # Regularization energy
-    obj_Pi_reg = obj_regularization_energy(a_i, P, futils)
     
-    return obj_Pi_pot + obj_Pi_dis + obj_Pi_reg
+    return obj_Pi_pot + obj_Pi_dis
 
 # Compute gradient
 @partial(jit, static_argnums=(2,3))
@@ -393,10 +341,8 @@ def grad_total_energy(a_i, P, futils, finterp):
     grad_Pi_pot = grad_potential_energy(a_i, P, futils)
     # Gradient of the dissipated energy
     grad_Pi_dis = grad_dissipated_energy(a_i, futils, finterp)
-    # Gradient of the regularization energy
-    grad_Pi_reg = grad_regularization_energy(a_i, P, futils)
     
-    return grad_Pi_pot + grad_Pi_dis + grad_Pi_reg
+    return grad_Pi_pot + grad_Pi_dis
 
 # Compute hessian matrix product
 @partial(jit, static_argnums=(3,4))
@@ -405,10 +351,8 @@ def hessp_total_energy(a_i, v_i, P, futils, finterp):
     hessp_Pi_pot = hessp_potential_energy(a_i, v_i, P, futils)
     # Hessian product of the dissipated energy
     hessp_Pi_dis = hessp_dissipated_energy(a_i, v_i, futils, finterp)
-    # Hessian product of the dissipated energy
-    hessp_Pi_reg = hessp_regularization_energy(a_i, v_i, P, futils)
         
-    return hessp_Pi_pot + hessp_Pi_dis + hessp_Pi_reg
+    return hessp_Pi_pot + hessp_Pi_dis
 
 ########################################################################
 # Preconditionner
@@ -578,7 +522,7 @@ class FractureProblem :
 # Initiate FractureProblem and set PETSc solvers
 
 # Set front
-front = FrontUtils(N, alpha)
+front = FrontUtils(N)
 # Set field
 field = FieldData(field_name, Gc_0, sign, sigma)
 if (a_max > field.L):
@@ -723,16 +667,9 @@ while(success & (i < P.size)):
     average_error[i] = average_error_on_Griffith
     step_duration[i] = stop_time - start_time
     iteration_counts[i] = tao.getIterationNumber()
-    # Get intensity of the perturbation and regularization
-    G_pert = grad_potential_energy(a_computed, P[i], front)
-    G_pert /= (-2*np.pi/N*a_computed)
-    G_pert -= G0(a_computed.mean(), P[i])
-    G_reg = grad_regularization_energy(a_computed, P[i], front)
-    G_reg /= (-2*np.pi/N*a_computed)
     # Write step infos
-    print("Mean radius: {:.2e}/{:.0f} - Maximum deviation: {:.2e} – Error on Griffith's criterion: {:.2e}/{:.2e} (avg/max)".format(a_computed.mean(), a_max, np.abs(a_computed-a_computed.mean()).max(), average_error_on_Griffith, max_error_on_Griffith))
-    print("Perturbation: {:.2e}/{:.2e} (avg/max) – Regularization: {:.2e}/{:.2e} (avg/max)".format(np.sqrt(np.mean(G_pert**2)), np.abs(G_pert).max(), np.sqrt(np.mean(G_reg**2)), np.abs(G_reg).max()))
-    print("Converged reason: {:d} – Number of iterations: {:d} – Step duration: {:.3E}".format(tao.getConvergedReason(), tao.getIterationNumber(), stop_time - start_time), end='\n\n')
+    print("Mean radius: {:.2e}/{:.0f} - Maximum deviation: {:.2e} - Error on Griffith's criterion: {:.2e}/{:.2e} (avg/max)".format(a_computed.mean(), a_max, np.abs(a_computed-a_computed.mean()).max(), average_error_on_Griffith, max_error_on_Griffith))
+    print("Converged reason: {:d} - Number of iterations: {:d} - Step duration: {:.3E}".format(tao.getConvergedReason(), tao.getIterationNumber(), stop_time - start_time), end='\n\n')
     # Update step count
     problem.incr_step()
     i = problem.step
@@ -779,7 +716,6 @@ with open(save_path+'results/'+simulation_name+'.npz', 'wb') as outfile:
                       front_position = a, dissipated_energy = Pi_dis, potential_energy = Pi_pot,\
                       initial_radius = a_ini, maximum_radius = a_max, \
                       radius_increment = da, tr_radius = Delta, \
-                      regularization_parameter = alpha, \
                       maximum_error = max_error, average_error = average_error, \
                       step_duration = step_duration, iteration_counts = iteration_counts, total_time = np.sum(step_duration))
 # Remove bin file
