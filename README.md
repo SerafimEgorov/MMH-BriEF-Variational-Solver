@@ -21,14 +21,14 @@ Python ≥ 3.9 with: `numpy`, `scipy`, `matplotlib`, `jax` (double precision ena
 
 ## Quick start
 
-The pre-generated field `{NAME}_f.npz` and its integrated counterpart `{NAME}_F_N{N}pts.npz` must be present in `./fields/` before launching a solver (here, `NAME = GaussianUniform` and `N = 2048`). A demo fluctuation field GaussianUniform_f.npz is archived on Zenodo (DOI: https://doi.org/10.5281/zenodo.20056873). Download it into fields/ before running the solver, or regenerate it locally with generate_disorder.py (see fields/readme.md).
+The pre-generated field `{NAME}_f.npz` and its integrated counterpart `{NAME}_F_N{N}pts.npz` must be present in `./fields/` before launching a solver (here, `NAME = GaussianUniform` and `N = 2048`). A demo fluctuation field GaussianUniform_f.npz and its integrated conterpart GaussianUniform_F_2048.npz is archived on Zenodo (DOI: https://doi.org/10.5281/zenodo.20122852). Download it into fields/ before running the solver, or regenerate it locally with generate_disorder.py (see fields/readme.md).
 
 **Mode I (tensile, normal point force $P$):**
 
 ```bash
 python propagate_tensile_rupture.py -sim test_results_tensile \
     -f GaussianUniform -a_ini 0.01 -a_max 121 -da 0.1 -tr 0.1 \
-    -sigma 0.5 -nu 0.2 -sign 1 -N 2048 -path ./ -spath ./ -user_pc
+    -sigma 0.5 -sign 1 -N 2048 -path ./ -spath ./ -user_pc
 ```
 
 **Mode II+III (shear, pair of antisymmetric shear forces $Q$):**
