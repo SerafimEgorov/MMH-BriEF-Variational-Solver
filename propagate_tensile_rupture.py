@@ -59,7 +59,7 @@ parser.add_argument('-tr', '--tr_radius', type=float,
 parser.add_argument('-sigma', '--sigma', type=float,
                     help=('Normalized field standard deviation'), required=True)
 parser.add_argument('-nu', '--poisson_ratio', type=float,
-                    help=('Poisson ratio for the simulation'), required=True)
+                    help=('Poisson ratio for the simulation'), required=False)
 parser.add_argument('-sign', '--sign', type=float,
                     help=('Sign factor'), default=+1, nargs='?')
 parser.add_argument('-N', '--number_of_points', type=int,
