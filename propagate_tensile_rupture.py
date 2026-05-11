@@ -113,13 +113,9 @@ Pi_pot_0 = lambda a, P : 2*np.pi * (P**2 /(E*jnp.pi**3))/ a
 # G and its derivatives
 G0 = lambda a, P : (P**2 /(E*jnp.pi**3)) / a**3
 G0_prime = lambda a, P : -3 * (P**2 /(E*jnp.pi**3)) / a**4
-G0_second = lambda a, P : 12 * (P**2 /(E*jnp.pi**3)) / a**5 # reserved for second order in G; unused at first order
 # aG and its derivatives
 aG0 = lambda a, P : a * G0(a, P)
 aG0_prime = lambda a, P : G0(a, P) + a * G0_prime(a, P)
-aG0_second = lambda a, P : 2*G0_prime(a, P) + a * G0_second(a, P) # reserved for second order in G; unused at first order
-# G/A and its derivatives
-G0_over_a = lambda a, P : G0(a, P)/a # reserved for second order in G; unused at first order
 
 ########################################################################
 # Pre-computed quantities for the front position
