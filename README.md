@@ -14,14 +14,14 @@ Python ≥ 3.9 with: `numpy`, `scipy`, `matplotlib`, `jax` (double precision ena
 
 ## Files
 
-- **`propagate_tensile_rupture.py`** — Mode I crack propagation under a pair of normal point forces $P$ applied at the centre of the reference circular front. First-order expansion of the potential energy in $G$; supports an optional Tikhonov-like regularization (`-alpha`) in case of extension to second order.
+- **`propagate_tensile_rupture.py`** — Mode I crack propagation under a pair of normal point forces $P$ applied at the centre of the reference circular front. First-order expansion of the potential energy in $G$.
 - **`propagate_shear_rupture.py`** — Mixed mode II+III crack propagation under a pair of antisymmetric shear forces $Q$ applied at the centre. First-order expansion in $G$.
-- **`fields/`** — pre-generated fluctuation fields and their integrated counterparts; see `fields/readme.md` for regeneration.
+- **`fields/`** — should contain pre-generated fluctuation field and its integrated quantities accesible through https://doi.org/10.5281/zenodo.20122852; see `fields/readme.md` for regeneration.
 - **`results/`** — created at runtime; contains the `.npz`.
 
 ## Quick start
 
-The pre-generated field `{NAME}_f.npz` and its integrated counterpart `{NAME}_F_N{N}pts.npz` must be present in `./fields/` before launching a solver (here, `NAME = GaussianUniform` and `N = 2048`). A demo fluctuation field GaussianUniform_f.npz and its integrated conterpart GaussianUniform_F_2048.npz is archived on Zenodo (DOI: https://doi.org/10.5281/zenodo.20122852). Download it into fields/ before running the solver, or regenerate it locally with generate_disorder.py (see fields/readme.md).
+The pre-generated field `{NAME}_f.npz` and its integrated counterpart `{NAME}_F_N{N}pts.npz` must be present in `./fields/` before launching a solver (here, `NAME = GaussianUniform` and `N = 2048`). A demo fluctuation field GaussianUniform_f.npz and its integrated quantities in GaussianUniform_F_2048.npz is archived on Zenodo (DOI: https://doi.org/10.5281/zenodo.20122852). Download it into fields/ before running the solver, or regenerate it locally with generate_disorder.py (see fields/readme.md).
 
 **Mode I (tensile, normal point force $P$):**
 
@@ -60,7 +60,6 @@ Common to both solvers.
 - **`-a_ini`, `--initial_radius`** — Initial circular front radius. Default `0`; the first loading step then starts at `a0[0] ~ 1e-4`. A value `> 0` imposes a lower bound on $a(\theta)$ at step 0 (active irreversibility from the start).
 - **`-tr`, `--tr_radius`** — Maximum trust-region radius for BNTR, in units of $d$. Should be a fraction of the heterogeneity length scale (typically `0.05`–`0.5`) so that the optimizer cannot cross energy barriers of $\Pi_{\mathrm{tot}}$ during a single Newton step and ends up on the next physical metastable equilibrium.
 - **`-sign`, `--sign`** — Sign of the fluctuation prefactor (`+1` / `-1`). With `+1` the field $f$ is used as generated; with `-1` it is mirrored, swapping tough and weak regions on the same realization. Default `+1`.
-- **`-alpha`, `--alpha`** *(tensile only)* — Tikhonov-like regularization weight penalizing the curvature of $(a - \langle a \rangle)$; stabilizes the second-order expansion at very high disorder. Default `0` (off).
 - **`-nopopup`, `--display_options`** — Suppress the matplotlib pop-up; only save the figure on disk.
 - **`-user_pc`, `--preconditioner`** — Replace the default PETSc preconditioner by the physics-based matrix-free preconditioner built from the inverse Hessian of the homogeneous penny-shaped crack. Recommended for low / moderate $\sigma$ and small $\nu$; the speed-up degrades at high contrast or large $\nu$.
 
@@ -93,12 +92,6 @@ Common to both solvers.
 | `step_duration` | wall-clock time per step |
 | `iteration_counts` | TAO iteration count per step |
 | `total_time` | `np.sum(step_duration)` |
-
-**Tensile only:**
-
-| Key | Content |
-|---|---|
-| `regularization_parameter` | `alpha` |
 
 **Shear only:**
 
