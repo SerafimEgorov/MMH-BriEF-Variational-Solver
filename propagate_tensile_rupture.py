@@ -270,7 +270,7 @@ def obj_potential_energy(a_i, P, futils):
     da_i = a_i - hat_a_0
     dft_N_da = jfft.rfft(da_i, norm="forward")
     # Fractional laplacian
-    dft_N_Lda = - jnp.abs(k) * dft_N_da # Note: (âˆ’|k|) Fourier convention for L; the sign is reabsorbed in the Pi_pot expression below (cf. l. 289). Shear solver uses the standard (+|k|) convention.
+    dft_N_Lda = - jnp.abs(k) * dft_N_da # Note: (-|k|) Fourier convention for L; the sign is reabsorbed in the Pi_pot expression below (cf. l. 289). Shear solver uses the standard (+|k|) convention.
     Lda_i = jfft.irfft(dft_N_Lda, norm="forward")
     
     # Dealiased averaged quantities
@@ -280,7 +280,7 @@ def obj_potential_energy(a_i, P, futils):
     # Objective
     obj_Pi_pot =  Pi_pot_0(hat_a_0, P) \
                 - jnp.pi   * aG0_prime(hat_a_0, P) * hat_da2_0 \
-                - jnp.pi   * G0(hat_a_0, P) * hat_daLda_0 # Note: The minus sign here compensates the (âˆ’|k|) convention used for L_code on l. 279, so that the result matches +Ï€ G0 <Î”aÂ·L[Î”a]> as in Eq. (17) of the article.
+                - jnp.pi   * G0(hat_a_0, P) * hat_daLda_0 # Note: The minus sign here compensates the (-|k|) convention used for L_code on l. 279, so that the result matches +π  G0  <Δa·L[Δa]> as in Eq. (17) of the article.
     
     return obj_Pi_pot
 
