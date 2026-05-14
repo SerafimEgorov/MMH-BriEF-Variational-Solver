@@ -6,7 +6,7 @@ $$\Pi_{\mathrm{tot}}([a]) = \Pi_{\mathrm{pot}}([a]) + \Pi_{\mathrm{dis}}([a]),$$
 
 where the potential energy $\Pi_{\mathrm{pot}}$ is evaluated asymptotically from front deformations using the perturbation theory of Rice (Bueckner–Rice weight-function approach), and the dissipated energy $\Pi_{\mathrm{dis}}$ is set by the heterogeneous fracture energy field $G_c(r, \theta) = \langle G_c \rangle \, (1 + \mathrm{sign} \cdot \sigma \cdot f)$. The non-convex bound-constrained minimization is performed with the PETSc TAO Bounded Newton Trust Region (BNTR) method; gradient and Hessian-vector products are evaluated matrix-free through JAX automatic differentiation and FFT.
 
-Please cite the accompanying paper and this code in any work using it:
+Please cite the accompanying paper for this code in any work that is using it:
 > **Reference:** S. Egorov, A. Sanner, J. Sulem, L. Pastewka, M. Lebihain, *"Bridging perturbation and variational approaches in brittle fracture"*. 
 > **arXiv:** https://arxiv.org/abs/2605.12631
 ## Dependencies
