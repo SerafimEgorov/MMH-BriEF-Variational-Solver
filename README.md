@@ -53,7 +53,7 @@ Common to both solvers.
 - **`-sigma`, `--sigma`** — Normalized standard deviation of the toughness field $\sigma = \mathrm{std}(G_c)/\langle G_c \rangle$; controls the disorder intensity. The fracture-energy field is built as $G_c = \langle G_c \rangle\,(1 + \mathrm{sign} \cdot \sigma \cdot f)$.
 - **`-nu`, `--poisson_ratio`** — Poisson's ratio of the elastic medium. Effective only for the shear solver (mixed II/III split); accepted by the tensile solver for argument-list uniformity.
 - **`-N`, `--number_of_points`** — Number of discretization points on the front. Must match the $N$ used to precompute the integrated field `{f}_F_N{N}pts.npz`. A power of two is strongly recommended (FFT-based operators).
-- **`-spath`, `--save_path`** — Path where /results folder containing .npz will be created.
+- **`-spath`, `--save_path`** — Path where /results folder containing .npz will be created. Always should be ended with a trailing slash /. Example: "/home/serafim.egorov@enpc.fr/Documents/MMH-BriEF-Variational-Solver/"
 
 ### Optional
 
@@ -107,7 +107,9 @@ A `{sim}.pdf` showing the field and successive front positions is also produced 
 - The integrated fluctuations file `{f}_F_N{N}pts.npz` must be precomputed for the exact `N` requested at runtime (the solver cross-checks the angular grid and aborts on mismatch).
 - For very large simulations consider disabling the LaTeX matplotlib backend by editing `rc('text', usetex=True)` at the top of the scripts (allowed only as a local workaround).
 - The code is RAM-heavy: for the current examples, ≈ 8 GB of free RAM is needed.
+- The code is tested and working for linux or MacOS, these systems are recommended. 
 - The notation is different from one used in assosiated article. In particular: i) $K_1 = K_\mathrm{I}$ ; $K_2 = K_\mathrm{II}$ ; $K_3 = - K_\mathrm{III}$; ii) Hilbert transform operator $\mathcal{S} = - \mathcal{H}$
+
 
 ## Contact 
 
