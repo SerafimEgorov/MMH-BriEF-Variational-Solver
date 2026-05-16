@@ -21,22 +21,22 @@ parser.add_argument('-f', '--field', type=str,
                     help=('Name of the random field'), required=True)
 parser.add_argument('-N', '--number_of_points', type=int,
                     help=('Number of points along the crack front'), required=True)
-parser.add_argument('-path', '--path', type=str,
-                    help=('Global path'), required=True)
+parser.add_argument('-fpath', '--field_path', type=str,
+                    help=('Path to the folder containing generated fields'), required=True)
 parser.add_argument('-spath', '--save_path', type=str,
-                    help=('Path to the results'), required=True)
+                    help=('By default saves in the same folder with the script'), default='./', nargs='?')  
 args = parser.parse_args()
 
 # Save and working directories 
 
 
-#Global path 
-global_path = args.path
+#Field path 
+field_path = args.field_path
 # Save path
 save_path = args.save_path
 
 # Get field
-field_data = np.load(save_path + 'fields/'+args.field+'_f.npz')
+field_data = np.load(field_path + args.field+'_f.npz')
 # Get width of the heterogeneous interface
 L_field = field_data['domain_size']
 # Position
@@ -81,6 +81,6 @@ for i in range(N):
     d2F[:,i] = rf_spl.derivative(1)(r)
 
 # Save results
-with open(save_path + 'fields/{:s}_F_N{:d}pts.npz'.format(args.field, N), 'wb') as outfile:
+with open(save_path + '{:s}_F_N{:d}pts.npz'.format(args.field, N), 'wb') as outfile:
     np.savez(outfile, radius = r[::n], angle = theta, \
                       F = F[::n,:].astype('float32'), dF = dF[::n,:].astype('float32'), d2F = d2F[::n,:].astype('float32'))

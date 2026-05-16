@@ -23,8 +23,7 @@ import sys
 from matplotlib import rc
 rc('text', usetex=True)
 
-if not(os.path.isdir('fields')) :
-    os.mkdir('fields')
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
 #############################################################
 # Parser
@@ -39,11 +38,14 @@ parser.add_argument('-n', '--density', type=int,
                     help=('Number of points per heterogeneity width'), required=True)
 parser.add_argument('-nopopup', '--display_options', action='store_true',
                     help=('Display options'), required=False)
+parser.add_argument('-spath', '--save_path', type=str,
+                    help=('By default saves in the same folder with the script'), default='./', nargs='?')                    
 args = parser.parse_args()
 
 #############################################################
 # Simulation parameters
-
+# Save path
+save_path = args.save_path
 # Set simulation name
 field_name = args.field_name
 # Set width of the heterogeneous interface
@@ -88,7 +90,7 @@ z = x = np.linspace(-L_field/2, L_field/2, num=N_field, endpoint=False)
 f = generate_random_field(N_field, n_field)
 
 #Save results
-with open('fields/'+field_name+'_f.npz', 'wb') as outfile:
+with open(save_path+field_name+'_f.npz', 'wb') as outfile:
     np.savez(outfile, domain_size = L_field, number_of_points = N_field, \
                       position = (z,x), fluctuations = f.astype('float32'))
 
@@ -131,5 +133,4 @@ if '-nopopup' not in sys.argv :
     #Arrange
     fig.tight_layout(pad=2)
     #Save
-    fig.savefig('../fields/'+field_name+".pdf", dpi=320)
-    plt.show()
+    plt.savefig('{:s}.pdf'.format(field_name))

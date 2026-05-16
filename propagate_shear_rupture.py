@@ -62,8 +62,8 @@ parser.add_argument('-sign', '--sign', type=float,
                     help=('Sign factor'), default=+1, nargs='?')
 parser.add_argument('-N', '--number_of_points', type=int,
                     help=('Number of points along the crack front'), required=True)
-parser.add_argument('-path', '--path', type=str,
-                    help=('Global path'), required=True)
+parser.add_argument('-fpath', '--fields_path', type=str,
+                    help=('Path to the folder containing fields'), default='./fields/', nargs='?')                    
 parser.add_argument('-spath', '--save_path', type=str,
                     help=('Path to the results'), required=True)
 parser.add_argument('-nopopup', '--display_options', action='store_true',
@@ -180,7 +180,7 @@ class FieldData:
         # Set field name
         self.name = fname
         # Get field
-        field_data = np.load(args.save_path + 'fields/'+fname+'_f.npz')
+        field_data = np.load(args.fields_path + fname +'_f.npz')
         # Get width of the heterogeneous interface
         self.L = field_data['domain_size']
         # Set average fracture energy
@@ -198,7 +198,7 @@ class FieldData:
     
     def load_field(self):
         # Get field
-        field_data = np.load(args.save_path + 'fields/'+self.name+'_f.npz')
+        field_data = np.load(args.fields_path + self.name + '_f.npz')
         # Set position
         self.z, self.x = field_data['position']
         # Set fluctuations field f
@@ -210,12 +210,12 @@ class FieldData:
 class FieldInterpolator():
     def __init__(self, fdata, futils):
         # Generate data if not existing
-        if not(os.path.isfile(args.save_path + 'fields/{:s}_F_N{:d}pts.npz'.format(fdata.name, futils.N))):
+        if not(os.path.isfile(args.fields_path + '/{:s}_F_N{:d}pts.npz'.format(fdata.name, futils.N))):
             print("Precomputing the integrated field F and its derivatives for N={:d}.".format(futils.N))
-            subprocess.call('python fields/compute_integrated_fluctuations.py -f {:s} -N {:d} -path {:s} -spath {:s}'.format(
-    fdata.name, futils.N, args.save_path, args.save_path), shell=True)
+            subprocess.call('python {:s}/compute_integrated_fluctuations.py -f {:s} -N {:d} -fpath {:s} -spath {:s}'.format(args.fields_path,
+    fdata.name, futils.N, args.fields_path , args.fields_path ), shell=True)
         # Load data
-        data = np.load(args.save_path + 'fields/{:s}_F_N{:d}pts.npz'.format(fdata.name, futils.N))
+        data = np.load(args.fields_path + '/{:s}_F_N{:d}pts.npz'.format(fdata.name, futils.N))
         # Radius
         r = data['radius']
         # Angle
