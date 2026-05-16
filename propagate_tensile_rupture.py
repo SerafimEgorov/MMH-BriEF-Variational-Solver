@@ -33,10 +33,6 @@ import subprocess
 from matplotlib import rc
 rc('text', usetex=True)
 
-# Create save folder
-if not(os.path.isdir('../results')) :
-    os.mkdir('../results')
-
 jax.config.update("jax_enable_x64", True)  # use double-precision
 
 #############################################################
