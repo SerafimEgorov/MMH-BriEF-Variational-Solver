@@ -186,7 +186,8 @@ class FieldInterpolator():
         # Generate data if not existing
         if not(os.path.isfile(args.save_path + 'fields/{:s}_F_N{:d}pts.npz'.format(fdata.name, futils.N))):
             print("Precomputing the integrated field F and its derivatives for N={:d}.".format(futils.N))
-            subprocess.call('python ../sources/compute_integrated_fluctuations.py -f {:s} -N {:d} -path {:s} -spath {:s}'.format(fdata.name, futils.N, '/libre/segorov/', args.save_path), shell = True)
+            subprocess.call('python fields/compute_integrated_fluctuations.py -f {:s} -N {:d} -path {:s} -spath {:s}'.format(
+    fdata.name, futils.N, args.save_path, args.save_path), shell=True)
         # Load data
         data = np.load(args.save_path + 'fields/{:s}_F_N{:d}pts.npz'.format(fdata.name, futils.N))
         # Radius
