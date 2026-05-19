@@ -66,8 +66,8 @@ Common to both solvers.
 
 ## Output
 
-- Tensile → `{spath}results/{sim}.npz`
-- Shear → `{spath}results/{sim}_results.npz`
+- Tensile → `{spath}results/{sim}_tensile.npz`
+- Shear → `{spath}results/{sim}_shear.npz`
 
 **Common fields:**
 

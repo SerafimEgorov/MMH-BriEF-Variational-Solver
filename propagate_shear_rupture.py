@@ -800,7 +800,7 @@ a = np.fromfile(file_for_a, dtype=np.float64).reshape(a0.size, N)
 if (not success):
     a = a[:-1]
 #Save results
-with open(args.save_path+'results/'+simulation_name+'_results.npz', 'wb') as outfile:
+with open(args.save_path+'results/'+simulation_name+'_shear.npz', 'wb') as outfile:
     np.savez(outfile, completed = completed, number_of_points = N, \
                       field_name = field_name, sign = sign, \
                       Young_modulus = E, Poisson_ratio = nu, \
