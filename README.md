@@ -27,7 +27,7 @@ The pre-generated field `{NAME}_f.npz` and (optionally) pre-integrated quantitie
 **Mode I (tensile, normal point force $P$):**
 
 ```bash
-python propagate_tensile_rupture.py -sim test_results_tensile \
+python propagate_tensile_rupture.py -sim test \
     -f GaussianUniform -a_ini 0.01 -a_max 121 -da 0.1 -tr 0.1 \
     -sigma 0.5 -sign 1 -N 2048 -spath ./ -user_pc
 ```
@@ -35,7 +35,7 @@ python propagate_tensile_rupture.py -sim test_results_tensile \
 **Mode II+III (shear, pair of antisymmetric shear forces $Q$):**
 
 ```bash
-python propagate_shear_rupture.py -sim test_results_shear \
+python propagate_shear_rupture.py -sim test \
     -f GaussianUniform -a_ini 0.01 -a_max 121 -da 0.1 -tr 0.1 \
     -sigma 0.5 -nu 0.2 -sign 1 -N 2048 -spath ./ -user_pc
 ```
