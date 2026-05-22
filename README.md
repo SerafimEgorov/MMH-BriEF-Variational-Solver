@@ -11,7 +11,7 @@ Please cite the accompanying paper for this code in any work that is using it:
 > **arXiv:** https://arxiv.org/abs/2605.12631
 ## Dependencies
 
-Python ≥ 3.9 with: `numpy`, `scipy`, `matplotlib`, `jax` (double precision enabled), `petsc4py` (PETSc with TAO), and a working LaTeX installation (`matplotlib` is configured with `usetex=True`).
+Python ≥ 3.9 with: `numpy`, `scipy`, `matplotlib`, `jax` (double precision enabled), `petsc4py` (PETSc with TAO).
 
 ## Files
 
@@ -21,8 +21,10 @@ Python ≥ 3.9 with: `numpy`, `scipy`, `matplotlib`, `jax` (double precision ena
 - **`results/`** — created at runtime; contains the `.npz`.
 
 ## Quick start
-First, please, read an INSTALL.md and when completed, you can continue here. 
-The pre-generated field `{NAME}_f.npz` and (optionally) pre-integrated quantities `{NAME}_F_N{N}pts.npz` should be present in `./fields/` before launching a solver (here, `NAME = GaussianUniform` and `N = 2048`).  A demo fluctuation field GaussianUniform_f.npz and its pre-integrated quantities GaussianUniform_F_2048.npz is archived on Zenodo (DOI: https://doi.org/10.5281/zenodo.20122852). Download it into fields/ before running the solver for simple demo, or generate the field with generate_disorder.py (see fields/readme.md).
+
+First, please, read an INSTALL.md and when the environment installation is completed, continue from here. 
+
+The pre-generated field `{NAME}_f.npz` and (optionally) pre-integrated quantities `{NAME}_F_N{N}pts.npz` should be present in `./fields/` before launching a solver (here, `NAME = GaussianUniform` and `N = 2048`).  A demo fluctuation field GaussianUniform_f.npz and its pre-integrated quantities GaussianUniform_F_N2048.npz is archived on Zenodo (DOI: https://doi.org/10.5281/zenodo.20122852). Download it into fields/ before running the solver for simple demo, or generate the field with generate_disorder.py (see fields/readme.md).
 
 **Mode I (tensile, normal point force $P$):**
 
@@ -53,7 +55,7 @@ Common to both solvers.
 - **`-sigma`, `--sigma`** — Normalized standard deviation of the toughness field $\sigma = \mathrm{std}(G_c)/\langle G_c \rangle$; controls the disorder intensity. The fracture-energy field is built as $G_c = \langle G_c \rangle\,(1 + \mathrm{sign} \cdot \sigma \cdot f)$.
 - **`-nu`, `--poisson_ratio`** — Poisson's ratio of the elastic medium. Effective only for the shear solver (mixed II/III split); accepted by the tensile solver for argument-list uniformity.
 - **`-N`, `--number_of_points`** — Number of discretization points on the front. Must match the $N$ used to precompute the integrated field `{f}_F_N{N}pts.npz`. A power of two is strongly recommended (FFT-based operators).
-- **`-spath`, `--save_path`** — Path where /results folder containing .npz will be created. Always should be ended with a trailing slash /. Example: "/home/serafim.egorov@enpc.fr/Documents/MMH-BriEF-Variational-Solver/"
+
 
 ### Optional
 
@@ -61,7 +63,9 @@ Common to both solvers.
 - **`-tr`, `--tr_radius`** — Maximum trust-region radius for BNTR, in units of $d$. Should be a fraction of the heterogeneity length scale (typically `0.05`–`0.5`) so that the optimizer cannot cross energy barriers of $\Pi_{\mathrm{tot}}$ during a single Newton step and ends up on the next physical metastable equilibrium.
 - **`-sign`, `--sign`** — Sign of the fluctuation prefactor (`+1` / `-1`). With `+1` the field $f$ is used as generated; with `-1` it is mirrored, swapping tough and weak regions on the same realization. Default `+1`.
 - **`-fpath`, `--field_path`** — Path to the fields containing folder. Default `./fields/`
-- **`-nopopup`, `--display_options`** — Suppress the matplotlib pop-up; only save the figure on disk.
+- **`-spath`, `--save_path`** — Path where /results folder containing .npz will be created. Always should be ended with a trailing slash /. Example: "/home/serafim.egorov@enpc.fr/Documents/MMH-BriEF-Variational-Solver/". Default `./`
+- **`-latex_on`, `--latex`** — Activate latex font for the figures. It is `strong_true` parameter and disabled by default. To make it work, latex distribution should be installed. 
+- **`-noplot`, `--no_plot_option`** — Suppress the matplotlib plot that saves the figure in `./results/`.
 - **`-user_pc`, `--preconditioner`** — Replace the default PETSc preconditioner by the physics-based matrix-free preconditioner built from the inverse Hessian of the homogeneous penny-shaped crack. Recommended for low / moderate $\sigma$ and small $\nu$; the speed-up degrades at high contrast or large $\nu$.
 
 ## Output
@@ -100,12 +104,11 @@ Common to both solvers.
 |---|---|
 | `Poisson_ratio` | $\nu$ |
 
-A `{sim}.pdf` showing the field and successive front positions is also produced unless `-nopopup` is set, and saved in the same directory as the `.py` file.
+A `./results/{sim}.pdf` saves the field with successive front positions corresponding to crack propagation, unless `-noplot` is set.
 
 ## Notes
 
 - The integrated fluctuations file `{f}_F_N{N}pts.npz` must be precomputed for the exact `N` requested at runtime (the solver cross-checks the angular grid and aborts on mismatch).
-- For very large simulations consider disabling the LaTeX matplotlib backend by editing `rc('text', usetex=True)` at the top of the scripts (allowed only as a local workaround).
 - The code is RAM-heavy: for the current examples, ≈ 8 GB of free RAM is needed.
 - The code is tested and working for linux or MacOS, these systems are recommended. 
 - The notation is different from one used in assosiated article. In particular: i) $K_1 = K_\mathrm{I}$ ; $K_2 = K_\mathrm{II}$ ; $K_3 = - K_\mathrm{III}$; ii) Hilbert transform operator $\mathcal{S} = - \mathcal{H}$
@@ -113,4 +116,4 @@ A `{sim}.pdf` showing the field and successive front positions is also produced 
 
 ## Contact 
 
-If presented readme.md does not help to run crack propagation simulation (or any misleading/incorrect instructions are spotted), please contact: serafim.egorov@enpc.fr
+If presented README.md does not help to run crack propagation simulation (or any misleading/incorrect instructions are spotted), please contact: serafim.egorov@enpc.fr

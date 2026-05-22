@@ -29,9 +29,7 @@ import time
 import os
 import subprocess
 
-# LateX font
-from matplotlib import rc
-rc('text', usetex=True)
+
 
 jax.config.update("jax_enable_x64", True)  # use double-precision
 
@@ -63,12 +61,19 @@ parser.add_argument('-N', '--number_of_points', type=int,
 parser.add_argument('-fpath', '--field_path', type=str,
                     help=('Path to the folder containing fields'), default='./fields/', nargs='?')  
 parser.add_argument('-spath', '--save_path', type=str,
-                    help=('Path to the results'), required=True)
-parser.add_argument('-nopopup', '--display_options', action='store_true',
-                    help=('Display options'), required=False)
+                    help=('Path to the results'), default='./', nargs='?')
+parser.add_argument('-latex_on', '--latex',
+                    action='store_true', default=False,
+                    help='Enable LaTeX rendering for figure text (default: off)')
+parser.add_argument('-noplot', '--no_plot_option', action='store_true',
+                    help=('Disable plot generation at the end of simulation'), required=False)
 parser.add_argument('-user_pc', '--preconditioner', action='store_true',
                     help=('Use a user-defined preconditioner'), required=False)
 args = parser.parse_args()
+
+# LateX font
+from matplotlib import rc
+rc('text', usetex=args.latex)
 
 # Create save folder
 if not(os.path.isdir(args.save_path+'/results')) :
@@ -718,7 +723,7 @@ subprocess.call(cmd_rmv, shell = True)
 ########################################################################
 # Plot propagation
 
-if '-nopopup' not in sys.argv:
+if '-noplot' not in sys.argv:
     # Load field
     field.load_field()
     #Plot parameters
@@ -769,4 +774,4 @@ if '-nopopup' not in sys.argv:
     #Arrange
     fig.tight_layout(pad=1)
     #Save
-    plt.savefig('{:s}.pdf'.format(simulation_name))
+    plt.savefig(save_path+'results/'+'{:s}.pdf'.format(simulation_name))

@@ -3,65 +3,24 @@
 Total time estimated at **roughly 20-30 minutes**.
 
 **Supported systems:** Linux (tested on Ubuntu 24.04) and macOS on Apple Silicon
-(M1/M2/M3/M4). The two paths differ only in **Step 1** (LaTeX) and the installer name in
-**Step 2**; everything from Step 3 onward is identical, because Conda provides the same
-packages on both systems.
+(M1/M2/M3/M4). The two paths differ only in **Step 2** in the installer name 
+for Conda; everything from Step 3 onward is identical.
 
-> macOS support relies on the same conda-forge packages as Linux but has had less testing
-> than the Ubuntu path. If you hit a problem specific to macOS, see the Troubleshooting
-> section.
+> macOS relies on the same conda-forge packages as Linux but was tested less
+> than the Ubuntu. If you have a problem specific to macOS, please contact us.
 
 > **Why Conda?**
 > Some of the libraries this code relies on (PETSc, OpenMPI) are written in C/C++/Fortran,
-> and are notoriously hard to install by hand. *Conda* is a tool that downloads
+> and are hard to install by hand. *Conda* is a tool that downloads
 > pre-compiled, mutually-compatible versions of these libraries and isolates them in a named
 > "environment" so they never clash with the rest of your system. *conda-forge* is simply
 > the community package source we pull from.
 
-## Step 0 — Get the code
+## Step 1 — Get the code
 
 If you do not already have the repository on your machine, clone it with git clone or
-download a ZIP instead. Then open a terminal from your local repository; every command in
-this guide assumes your terminal is **inside the repository folder**.
-
----
-
-## Step 1 — Install the LaTeX system packages
-
-The plotting scripts render their text and equations with LaTeX. Without it, any script that
-produces a figure will fail immediately.
-
-### On Linux (Ubuntu/Debian)
-
-```bash
-sudo apt-get update
-sudo apt-get install -y \
-    texlive-latex-base \
-    texlive-fonts-recommended \
-    texlive-latex-extra \
-    cm-super \
-    dvipng
-```
-
-### On macOS
-
-macOS has no built-in package manager, so first install [Homebrew](https://brew.sh) if you
-do not already have it:
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-
-Then install MacTeX, which bundles LaTeX, the required fonts, and `dvipng`:
-
-```bash
-brew install --cask mactex-no-gui
-```
-
-After it finishes, open a new terminal (so the LaTeX binaries are on your `PATH`).
-
-> Either way this downloads a few hundred megabytes (MacTeX is larger, around 2 GB for the
-> `no-gui` variant) and takes a few minutes.
+download a ZIP instead. Then unzip it and open a terminal from the local repository (example: `~/Documents/MMH-BriEF-Variational-Solver$`).
+Every command in this guide assumes your terminal is **inside the repository folder**.
 
 ---
 
@@ -94,8 +53,7 @@ bash Miniforge3-MacOSX-arm64.sh -b -p "$HOME/miniforge3"
 ```
 
 > macOS uses **zsh** by default, which is why the macOS command ends in `conda init zsh`.
-> The Linux command assumes **bash**. If your shell differs, substitute its name (e.g.
-> `conda init bash` on a Mac configured for bash).
+> The Linux command assumes **bash**. If your shell differs, substitute its name.
 
 Now **close your terminal and open a new one** (this is required for `conda init` to take
 effect), then return to the repository folder. Verify it worked:
@@ -121,15 +79,14 @@ conda activate PyPETSc
 > conda activate PyPETSc
 > ```
 > When the environment is active, your prompt will start with `(PyPETSc)`. If you ever see
-> a "module not found" error, the first thing to check is whether `(PyPETSc)` is showing.
+> a "module not found" error, the first thing to check is whether `(PyPETSc)` is showing. Example: `(PyPETSc) username:~/Documents/MMH-BriEF-Variational-Solver$`)
 
 ---
 
 ## Step 4 — Install MPI and PETSc (the hard libraries)
 
-With the environment **active**, run these three commands in order. Each may take a few
-minutes; Conda will print "Solving environment..." while it works — this is normal, let it
-finish.
+With the environment **active**, run these three commands in order, one after another. Each may take a few
+minutes. 
 
 ```bash
 conda install -c conda-forge openmpi openmpi-mpicc openmpi-mpicxx openmpi-mpifort
@@ -138,7 +95,7 @@ conda install -c conda-forge petsc4py
 ```
 
 > **Do NOT install petsc4py or mpi4py with your system package manager (`apt`, Homebrew) or
-> with the system Python.** Those builds are compiled against a different NumPy and will
+> with the system Python.** Those builds are compiled against a different NumPy of older version and will probably
 > crash with `ValueError: numpy.dtype size changed` when used with the NumPy 2.0 here.
 > Installing them inside the Conda environment, as above, avoids this entirely.
 
@@ -191,8 +148,8 @@ DOI: https://doi.org/10.5281/zenodo.20122852
        -sim demo -f GaussianUniform \
        -a_max 50 -da 0.5 -sigma 0.1 -N 2048
    ```
-   Results are written to a `results/` folder created automatically, and a figure of the
-   propagation is saved at the repository root (`demo.pdf`).
+   Results and a figure of the propagation are written to a `results/` folder created automatically in the root
+   if parameter ignored.
 
 > **About the demo parameters:** `-sigma` (disorder strength) and the radii (`-a_max`, `-da`)
 > are illustrative values for a quick test. `-a_max` **must be smaller than the field size**
@@ -202,15 +159,3 @@ DOI: https://doi.org/10.5281/zenodo.20122852
 To generate your own field instead of downloading one, see `fields/readme.md`.
 
 ---
-
-## Troubleshooting
-
-| Symptom | Cause | Fix |
-|---|---|---|
-| `conda: command not found` | Conda not installed, or terminal not reopened after `conda init` | Redo Step 2; open a fresh terminal |
-| `ModuleNotFoundError` for any package | Environment not active | Run `conda activate PyPETSc`; check prompt shows `(PyPETSc)` |
-| `ValueError: numpy.dtype size changed` | A system `petsc4py` or `mpi4py` (from `apt` or Homebrew) is being picked up | Make sure `(PyPETSc)` is active; never install these outside Conda |
-| Matplotlib error mentioning `latex` or `dvipng` | LaTeX missing or incomplete; on macOS, terminal opened before MacTeX finished | Redo Step 1; open a fresh terminal so the LaTeX binaries are on `PATH` |
-| `brew: command not found` (macOS) | Homebrew not installed or not on `PATH` | Install Homebrew (Step 1) and follow its post-install `PATH` instructions |
-| Script stops: "Maximum radius is larger than field size" | `-a_max` exceeds the field's domain size | Lower `-a_max`, or generate a larger field |
-| Solver re-computes integrated field every run (slow start) | `_F_N{N}pts.npz` absent for your chosen `-N` | Let it run once; the file is cached in `fields/` afterwards |
