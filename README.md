@@ -21,7 +21,7 @@ Python ≥ 3.9 with: `numpy`, `scipy`, `matplotlib`, `jax` (double precision ena
 - **`results/`** — created at runtime; contains the `.npz`.
 
 ## Quick start
-
+First, please, read an INSTALL.md and when completed, you can continue here. 
 The pre-generated field `{NAME}_f.npz` and (optionally) pre-integrated quantities `{NAME}_F_N{N}pts.npz` should be present in `./fields/` before launching a solver (here, `NAME = GaussianUniform` and `N = 2048`).  A demo fluctuation field GaussianUniform_f.npz and its pre-integrated quantities GaussianUniform_F_2048.npz is archived on Zenodo (DOI: https://doi.org/10.5281/zenodo.20122852). Download it into fields/ before running the solver for simple demo, or generate the field with generate_disorder.py (see fields/readme.md).
 
 **Mode I (tensile, normal point force $P$):**
