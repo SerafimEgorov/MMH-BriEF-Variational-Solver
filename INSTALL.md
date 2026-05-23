@@ -155,7 +155,8 @@ DOI: https://doi.org/10.5281/zenodo.20122852
        -sim demo -f GaussianUniform \
        -a_max 21 -da 0.1 -sigma 0.1 -N 2048
    ```
-   If you see computational steps running, installation is successful!
+   If you see computational steps running, installation is successful! Congratulations!
+   
    Results and a figure with crack propagation are written to a `results/` folder that is created automatically in the root.
    Crack size is chosen to be small for demo run, if you want bigger rupture, we inviting you to come back to Quick Start section in README.md. 
 
