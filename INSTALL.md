@@ -133,29 +133,30 @@ is archived on Zenodo:
 DOI: https://doi.org/10.5281/zenodo.20122852
 ```
 
-1. Create the folder and download `GaussianUniform_f.npz` into it:
+1. Download `GaussianUniform_f.npz` into `fields/`:
    ```bash
-   mkdir -p fields
-   # then place the downloaded GaussianUniform_f.npz inside the fields/ folder
+   curl -L "https://zenodo.org/records/20122852/files/GaussianUniform_f.npz?download=1" -o fields/GaussianUniform_f.npz
+   
    ```
    You only need the `_f.npz` field file. The companion "integrated fluctuations" file
    (`GaussianUniform_F_N2048pts.npz`) is generated automatically by the solver on first run
-   if it is absent — so downloading it is optional.
+   and downloading is optional, but make demo faster.
+   
+   Download `GaussianUniform_F_N2048pts.npz` into `fields/`:
+   
+   ```bash
+   curl -L "https://zenodo.org/records/20122852/files/GaussianUniform_F_N2048pts.npz?download=1" -o fields/GaussianUniform_F_N2048pts.npz
+   ```
+   
 
 2. Run a Mode-I (tensile) propagation:
    ```bash
    python propagate_tensile_rupture.py \
        -sim demo -f GaussianUniform \
-       -a_max 50 -da 0.5 -sigma 0.1 -N 2048
+       -a_max 21 -da 0.1 -sigma 0.1 -N 2048
    ```
-   Results and a figure of the propagation are written to a `results/` folder created automatically in the root
-   if parameter ignored.
-
-> **About the demo parameters:** `-sigma` (disorder strength) and the radii (`-a_max`, `-da`)
-> are illustrative values for a quick test. `-a_max` **must be smaller than the field size**
-> used to generate the field, or the script will stop with a warning. Read the accompanying
-> paper and `fields/readme.md` for meaningful parameter choices.
-
-To generate your own field instead of downloading one, see `fields/readme.md`.
+   If you see computational steps running, installation is successful!
+   Results and a figure with crack propagation are written to a `results/` folder that is created automatically in the root.
+   Crack size is chosen to be small for demo run, if you want bigger rupture, we inviting you to come back to Quick Start section in README.md. 
 
 ---
