@@ -760,7 +760,7 @@ while(success & (i < Q.size)):
     # Save step
     a_computed.astype('float64').tofile(file_for_a)
     Pi_dis[i] = obj_dissipated_energy(a_computed, front, interpolator)
-    Pi_pot[i] = obj_potential_energy(a_computed, Q[-1], front)
+    Pi_pot[i] = obj_potential_energy(a_computed, Q[i], front)
     max_error[i] = max_error_on_Griffith
     average_error[i] = average_error_on_Griffith
     step_duration[i] = stop_time - start_time
